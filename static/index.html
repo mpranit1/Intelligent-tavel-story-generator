@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wayfarer AI | Intelligent Travel Story Generator</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="text-slate-100 flex flex-col min-h-screen">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center shadow-lg shadow-amber-500/20">
+          <i data-lucide="compass" class="w-6 h-6 text-slate-950"></i>
+        </div>
+        <div>
+          <span class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            Wayfarer AI
+            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-normal border border-amber-500/30">Multimodal</span>
+          </span>
+          <p class="text-xs text-slate-400 hidden sm:block">Transform travel memories into rich narratives, visual scenes, itineraries & narration</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3 text-xs">
+        <button id="btn-scroll-input" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-amber-400"></i> New Story
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-10">
+
+    <!-- Hero Input Section -->
+    <section id="input-section" class="glass-panel rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+      <div class="absolute -top-24 -right-24 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-3xl mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2 font-serif-travel">Tell Your Travel Story</h1>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Paste your raw travel notes, journal snippets, or bullet points. Our multimodal AI will synthesize a complete digital story with an immersive narrative, day-by-day itinerary, generated visual scenes, social captions, and neural audio narration.
+        </p>
+      </div>
+
+      <!-- Quick Preset Suggestions -->
+      <div class="mb-5">
+        <div class="flex items-center gap-2 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          Try A Sample Trip:
+        </div>
+        <div id="presets-container" class="flex flex-wrap gap-2">
+          <!-- Populated dynamically via JS -->
+          <div class="text-xs text-slate-500 animate-pulse">Loading preset expeditions...</div>
+        </div>
+      </div>
+
+      <!-- Input Form -->
+      <form id="story-form" class="space-y-6">
+        <div>
+          <label for="travel-notes" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 flex items-center justify-between">
+            <span>Your Travel Description / Notes</span>
+            <span id="char-counter" class="text-slate-500 lowercase font-normal">0 characters</span>
+          </label>
+          <textarea
+            id="travel-notes"
+            rows="5"
+            required
+            placeholder="e.g. We spent 4 days wandering through Kyoto in late autumn. We walked the vermilion torii gates at dawn with mist swirling in the cedars, ate matcha soft serve in Gion, explored the Arashiyama bamboo forest, and watched the sunset from a hillside temple..."
+            class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-4 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm transition leading-relaxed"
+          ></textarea>
+        </div>
+
+        <!-- Settings Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+          <!-- Story Tone -->
+          <div>
+            <label for="tone-select" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <i data-lucide="feather" class="w-3.5 h-3.5 text-amber-400"></i> Narrative Tone
+            </label>
+            <select id="tone-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <option value="evocative">Poetic & Evocative</option>
+              <option value="adventurous">Adventurous & Bold</option>
+              <option value="romantic">Romantic & Warm</option>
+              <option value="luxury">Luxury & Serene</option>
+              <option value="playful">Playful & Quirky</option>
+            </select>
+          </div>
+
+          <!-- Trip Duration -->
+          <div>
+            <label for="duration-select" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i> Itinerary Pace
+            </label>
+            <select id="duration-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <option value="auto">Auto-detect from notes</option>
+              <option value="weekend">Weekend (2-3 Days)</option>
+              <option value="short">Short Getaway (4-5 Days)</option>
+              <option value="extended">Full Week (7 Days)</option>
+            </select>
+          </div>
+
+          <!-- Audio Voice -->
+          <div>
+            <label for="voice-select" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <i data-lucide="mic" class="w-3.5 h-3.5 text-amber-400"></i> Narration Voice
+            </label>
+            <select id="voice-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <option value="en-US-JennyNeural">Jenny (US - Warm Storyteller)</option>
+              <option value="en-US-GuyNeural">Guy (US - Adventurous)</option>
+              <option value="en-GB-SoniaNeural">Sonia (UK - Documentary)</option>
+              <option value="en-GB-RyanNeural">Ryan (UK - Expressive)</option>
+              <option value="en-AU-NatashaNeural">Natasha (AU - Friendly)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Optional Gemini API Key Drawer -->
+        <div class="pt-1 border-t border-slate-800/80">
+          <details class="group text-xs">
+            <summary class="cursor-pointer text-slate-400 hover:text-slate-200 flex items-center gap-1.5 transition select-none">
+              <i data-lucide="key" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Advanced: Custom Google Gemini API Key <span class="text-slate-500 font-normal">(optional — local intelligent engine runs automatically if empty)</span></span>
+            </summary>
+            <div class="mt-3 p-3 bg-slate-950/60 rounded-lg border border-slate-800 flex items-center gap-3">
+              <input
+                type="password"
+                id="gemini-key"
+                placeholder="AIzaSy... (leave blank to use built-in engine)"
+                class="flex-1 bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500 font-mono"
+              />
+              <button
+                type="button"
+                id="btn-toggle-key"
+                class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs transition"
+              >Show</button>
+            </div>
+          </details>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex items-center justify-end pt-2">
+          <button
+            type="submit"
+            id="btn-generate"
+            class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/25 flex items-center gap-2 transition transform active:scale-95"
+          >
+            <i data-lucide="sparkles" class="w-5 h-5 text-slate-950"></i>
+            <span>Generate Multimodal Story</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Generating / Loading State -->
+    <section id="loading-section" class="hidden glass-panel rounded-2xl p-10 text-center space-y-6">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 animate-pulse">
+        <i data-lucide="loader" class="w-8 h-8 animate-spin"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold text-white mb-2">Weaving Your Travel Story</h3>
+        <p id="loading-status-text" class="text-sm text-slate-400">Extracting themes, locations, and sensory details...</p>
+      </div>
+
+      <!-- Animated Pipeline Steps -->
+      <div class="max-w-md mx-auto grid grid-cols-4 gap-2 text-xs pt-4">
+        <div id="step-narrative" class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700 flex flex-col items-center text-center space-y-1">
+          <i data-lucide="feather" class="w-4 h-4 text-amber-400"></i>
+          <span class="text-[11px] text-slate-300">Narrative</span>
+        </div>
+        <div id="step-itinerary" class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700 flex flex-col items-center text-center space-y-1">
+          <i data-lucide="map" class="w-4 h-4 text-amber-400"></i>
+          <span class="text-[11px] text-slate-300">Itinerary</span>
+        </div>
+        <div id="step-visuals" class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700 flex flex-col items-center text-center space-y-1">
+          <i data-lucide="image" class="w-4 h-4 text-amber-400"></i>
+          <span class="text-[11px] text-slate-300">Visuals</span>
+        </div>
+        <div id="step-audio" class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700 flex flex-col items-center text-center space-y-1">
+          <i data-lucide="headphones" class="w-4 h-4 text-amber-400"></i>
+          <span class="text-[11px] text-slate-300">Narration</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Section (Visible after generation) -->
+    <section id="results-section" class="hidden space-y-8">
+
+      <!-- Story Hero Banner -->
+      <div class="glass-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div class="space-y-3 max-w-3xl">
+            <div class="flex flex-wrap items-center gap-2">
+              <span id="badge-destination" class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold border border-amber-500/30 flex items-center gap-1.5">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                <span id="story-destination">Kyoto, Japan</span>
+              </span>
+              <span id="badge-duration" class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 flex items-center gap-1.5">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span id="story-duration">4 Days / 3 Nights</span>
+              </span>
+              <span id="badge-date" class="text-xs text-slate-400 ml-2 hidden sm:inline"></span>
+            </div>
+
+            <h2 id="story-title" class="text-2xl sm:text-4xl font-bold text-white font-serif-travel tracking-tight">
+              Chronicles of Kyoto
+            </h2>
+            <p id="story-subtitle" class="text-amber-200/80 text-sm italic font-serif-travel">
+              A poetic odyssey through mist and stone
+            </p>
+
+            <p id="story-summary" class="text-slate-300 text-sm leading-relaxed pt-2 border-t border-slate-800">
+              Summary text will be populated here.
+            </p>
+
+            <!-- Vibe Tags -->
+            <div id="vibe-tags-container" class="flex flex-wrap gap-1.5 pt-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Quick Actions & Share -->
+          <div class="flex md:flex-col gap-2 shrink-0">
+            <button id="btn-cinema-mode" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs flex items-center gap-2 transition shadow-lg shadow-amber-500/20">
+              <i data-lucide="clapperboard" class="w-4 h-4 text-slate-950"></i>
+              <span>Cinema Mode</span>
+            </button>
+            <button id="btn-print-story" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-2 transition border border-slate-700">
+              <i data-lucide="printer" class="w-4 h-4 text-slate-400"></i>
+              <span>Print / PDF</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Master Story Audio Narration Bar -->
+        <div id="master-audio-card" class="mt-6 pt-5 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-950/40 p-4 rounded-xl border border-slate-800">
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button id="btn-master-play" class="w-11 h-11 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center transition shadow-md shrink-0">
+              <i data-lucide="play" id="icon-master-play" class="w-5 h-5 ml-0.5 fill-current"></i>
+            </button>
+            <div>
+              <div class="text-xs font-semibold text-white flex items-center gap-2">
+                <span>Complete Audio Narration</span>
+                <span id="audio-voice-badge" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700">Neural Voice</span>
+              </div>
+              <p class="text-[11px] text-slate-400">Listen to the full digital narrative spoken with natural pacing</p>
+            </div>
+          </div>
+
+          <!-- Audio Scrubber / Visualizer -->
+          <div class="flex items-center gap-3 w-full sm:w-80">
+            <span id="master-time-curr" class="text-xs font-mono text-slate-400">0:00</span>
+            <input type="range" id="master-audio-slider" min="0" max="100" value="0" class="w-full accent-amber-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg">
+            <span id="master-time-total" class="text-xs font-mono text-slate-400">0:00</span>
+          </div>
+
+          <audio id="master-audio-element" preload="none" class="hidden"></audio>
+        </div>
+      </div>
+
+      <!-- Tab Navigation Switcher -->
+      <div id="view-tabs" class="flex border-b border-slate-800 gap-2 sm:gap-4 overflow-x-auto pb-1 text-sm">
+        <button id="tab-scenes" class="tab-btn px-4 py-2.5 rounded-t-lg font-semibold border-b-2 border-amber-500 text-amber-400 bg-slate-800/50 flex items-center gap-2 transition shrink-0">
+          <i data-lucide="image" class="w-4 h-4"></i>
+          <span>Visual Scenes & Narrative</span>
+          <span id="count-scenes-badge" class="text-xs px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300">0</span>
+        </button>
+        <button id="tab-itinerary" class="tab-btn px-4 py-2.5 rounded-t-lg font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition shrink-0">
+          <i data-lucide="map" class="w-4 h-4"></i>
+          <span>Day-by-Day Itinerary</span>
+          <span id="count-days-badge" class="text-xs px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400">0</span>
+        </button>
+        <button id="tab-export" class="tab-btn px-4 py-2.5 rounded-t-lg font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition shrink-0">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Export & Share</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Visual Scenes & Narrative -->
+      <div id="panel-scenes" class="space-y-8">
+        <div id="scenes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Tab 2: Day-by-Day Itinerary -->
+      <div id="panel-itinerary" class="hidden space-y-6">
+        <div id="itinerary-days-container" class="space-y-6">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Tab 3: Export & Share -->
+      <div id="panel-export" class="hidden space-y-6">
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
+          <h3 class="text-xl font-bold text-white font-serif-travel flex items-center gap-2">
+            <i data-lucide="download" class="w-5 h-5 text-amber-400"></i>
+            Export Your Travel Story
+          </h3>
+          <p class="text-sm text-slate-300">
+            Download your multimodal story for personal archives, blog publication, social media, or travel journals.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <!-- Download Markdown -->
+            <div class="glass-card p-5 rounded-xl border border-slate-700/60 flex flex-col justify-between space-y-4">
+              <div>
+                <div class="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center mb-3">
+                  <i data-lucide="file-text" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm mb-1">Markdown Document (.md)</h4>
+                <p class="text-xs text-slate-400">Complete story chapters, visual prompts, and formatted itinerary ready for Obsidian, Notion, or GitHub.</p>
+              </div>
+              <button id="btn-download-md" class="w-full py-2 px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs flex items-center justify-center gap-2 transition">
+                <i data-lucide="download" class="w-4 h-4"></i> Download .md
+              </button>
+            </div>
+
+            <!-- Download JSON -->
+            <div class="glass-card p-5 rounded-xl border border-slate-700/60 flex flex-col justify-between space-y-4">
+              <div>
+                <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center mb-3">
+                  <i data-lucide="code" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm mb-1">Raw Story JSON (.json)</h4>
+                <p class="text-xs text-slate-400">Structured data schema with all metadata, scene prompts, image URLs, itinerary items, and audio links.</p>
+              </div>
+              <button id="btn-download-json" class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs flex items-center justify-center gap-2 transition">
+                <i data-lucide="code" class="w-4 h-4"></i> Download .json
+              </button>
+            </div>
+
+            <!-- Print / PDF -->
+            <div class="glass-card p-5 rounded-xl border border-slate-700/60 flex flex-col justify-between space-y-4">
+              <div>
+                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-3">
+                  <i data-lucide="printer" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-white text-sm mb-1">Print / Save as PDF</h4>
+                <p class="text-xs text-slate-400">Clean, printable editorial booklet layout suitable for saving as a high-resolution PDF or printing.</p>
+              </div>
+              <button onclick="window.print()" class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs flex items-center justify-center gap-2 transition">
+                <i data-lucide="printer" class="w-4 h-4"></i> Print Booklet
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Cinema / Slideshow Fullscreen Modal -->
+  <div id="cinema-modal" class="fixed inset-0 z-50 bg-slate-950/95 hidden flex flex-col justify-between p-6 sm:p-10 transition-opacity backdrop-blur-md">
+    <!-- Cinema Top Bar -->
+    <div class="flex items-center justify-between z-10">
+      <div class="flex items-center gap-3">
+        <span class="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30 flex items-center gap-1.5">
+          <i data-lucide="clapperboard" class="w-3.5 h-3.5"></i> Cinema Presentation
+        </span>
+        <span id="cinema-scene-counter" class="text-xs text-slate-400">Scene 1 of 4</span>
+      </div>
+      <button id="btn-close-cinema" class="p-2 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- Cinema Visual & Subtitles Stage -->
+    <div class="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto w-full my-4 relative">
+      <div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-900 group">
+        <img id="cinema-image" src="" alt="Cinema Scene Visual" class="w-full h-full object-cover animate-ken-burns transition-all duration-700">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent"></div>
+
+        <!-- Scene Caption Overlay -->
+        <div class="absolute bottom-6 left-6 right-6 space-y-2">
+          <h3 id="cinema-title" class="text-2xl sm:text-3xl font-bold text-white font-serif-travel drop-shadow-md">Scene Title</h3>
+          <p id="cinema-narration" class="text-sm sm:text-base text-slate-200 leading-relaxed max-w-3xl drop-shadow">Narrative text goes here...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cinema Controls Bottom Bar -->
+    <div class="flex items-center justify-between max-w-xl mx-auto w-full z-10 gap-4">
+      <button id="btn-cinema-prev" class="p-3 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 transition">
+        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+      </button>
+
+      <div class="flex items-center gap-3">
+        <button id="btn-cinema-play-pause" class="w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center transition shadow-lg">
+          <i data-lucide="play" id="icon-cinema-play" class="w-6 h-6 fill-current"></i>
+        </button>
+        <span id="cinema-audio-status" class="text-xs text-slate-400">Playing narration</span>
+      </div>
+
+      <button id="btn-cinema-next" class="p-3 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 transition">
+        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <audio id="cinema-audio-element" preload="none" class="hidden"></audio>
+  </div>
+
+  <!-- Image Lightbox Modal (For zoom inspection) -->
+  <div id="image-lightbox" class="fixed inset-0 z-50 lightbox-overlay hidden flex items-center justify-center p-4">
+    <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
+      <button id="btn-close-lightbox" class="absolute -top-12 right-0 p-2 text-slate-400 hover:text-white transition">
+        <i data-lucide="x" class="w-7 h-7"></i>
+      </button>
+      <img id="lightbox-img" src="" alt="High resolution visual" class="max-w-full max-h-[80vh] rounded-xl object-contain shadow-2xl border border-slate-700/50">
+      <p id="lightbox-caption" class="text-xs text-slate-300 text-center mt-3 max-w-2xl"></p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 space-y-1">
+    <p>Wayfarer AI — Multimodal Travel Story Generator</p>
+    <p class="text-[11px] text-slate-600">Cross-modal Text, Vision & Audio consistency powered by Gemini / Smart NLP, Pollinations AI & Neural Edge-TTS</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
